@@ -1,0 +1,6 @@
+name = Context Entity Field
+description = Integrate Entity field into context
+package = Context
+core = 7.x
+
+dependencies[] = context
