@@ -42,11 +42,23 @@ class context_condition_entity_field extends context_condition {
       '#default_value' => isset($defaults['field_name']) ? $defaults['field_name'] : TRUE,
     );
 
+    $form['field_empty'] = array(
+      '#title' => t('Empty field'),
+      '#type' => 'checkbox',
+      '#description' => t('Flag this to activate reaction on empty field.'),
+      '#default_value' => isset($defaults['field_empty']) ? $defaults['field_empty'] : TRUE,
+    );
+
     $form['field_value'] = array(
       '#title' => t('Field value'),
       '#type' => 'textfield',
       '#description' => t('Write the entity field value to compare'),
       '#default_value' => isset($defaults['field_value']) ? $defaults['field_value'] : TRUE,
+      '#states' => array(
+        'visible' => array(
+          ':input[name="field_empty"]' => array('checked' => FALSE),
+        ),
+      ),
     );
 
     return $form;
@@ -60,6 +72,7 @@ class context_condition_entity_field extends context_condition {
       'entity_type' => serialize($values['entity_type']),
       'field_name'  => $values['field_name'],
       'field_value' => $values['field_value'],
+      'field_empty' => $values['field_empty'],
     );
   }
 
@@ -74,7 +87,10 @@ class context_condition_entity_field extends context_condition {
         if (in_array($entity_type, array_filter(unserialize($settings['entity_type'])))) {
           $items = field_get_items($entity_type, $entity, $settings['field_name']);
 
-          if (isset($items[0]) && $settings['field_value'] == $items[0]['value']) {
+          if (count($items) == 0 && $settings['field_empty']) {
+            $this->condition_met($context);
+          }
+          else if (isset($items[0]) && $settings['field_value'] == $items[0]['value']) {
             $this->condition_met($context);
           }
         }
