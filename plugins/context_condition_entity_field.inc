@@ -56,7 +56,7 @@ class context_condition_entity_field extends context_condition {
       '#default_value' => isset($defaults['field_value']) ? $defaults['field_value'] : TRUE,
       '#states' => array(
         'visible' => array(
-          ':input[name="field_empty"]' => array('checked' => FALSE),
+          ':input[name*="field_empty"]' => array('checked' => FALSE),
         ),
       ),
     );
@@ -68,6 +68,7 @@ class context_condition_entity_field extends context_condition {
    * Condition form submit handler.
    */
   function condition_form_submit($values) {
+    $values['field_empty'] = isset($values['field_empty']) ? $values['field_empty'] : FALSE;
     return array(
       'entity_type' => serialize($values['entity_type']),
       'field_name'  => $values['field_name'],
@@ -86,8 +87,7 @@ class context_condition_entity_field extends context_condition {
 
         if (in_array($entity_type, array_filter(unserialize($settings['entity_type'])))) {
           $items = field_get_items($entity_type, $entity, $settings['field_name']);
-
-          if (count($items) == 0 && $settings['field_empty']) {
+          if (!is_array($items) && $settings['field_empty']) {
             $this->condition_met($context);
           }
           else if (isset($items[0]) && $settings['field_value'] == $items[0]['value']) {
