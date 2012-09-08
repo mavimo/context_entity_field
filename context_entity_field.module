@@ -1,11 +1,12 @@
 <?php
+
 /**
- * @file context_entity_field.module
- *    Adds entity field value as context condiction
+ * @file
+ * Adds entity field value as context condiction
  */
 
 /**
- * Implement hook_ctools_plugin_api().
+ * Implements hook_ctools_plugin_api().
  */
 function context_entity_field_ctools_plugin_api($module, $api) {
   if ($module == 'context' && $api == 'plugins') {
@@ -14,7 +15,7 @@ function context_entity_field_ctools_plugin_api($module, $api) {
 }
 
 /**
- * Implement hook_context_plugins().
+ * Implements hook_context_plugins().
  */
 function context_entity_field_context_plugins() {
   $plugins = array();
@@ -31,7 +32,7 @@ function context_entity_field_context_plugins() {
 }
 
 /**
- * Implement hook_context_registry().
+ * Implements hook_context_registry().
  */
 function context_entity_field_context_registry() {
   $registry['conditions'] = array(
@@ -46,7 +47,7 @@ function context_entity_field_context_registry() {
 }
 
 /**
- * Implementation of hook_entity_view().
+ * Implements of hook_entity_view().
  */
 function context_entity_field_entity_view($entity, $type, $view_mode, $langcode) {
   if ($plugin = context_get_plugin('condition', 'entity_field')) {

@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Implement context condiction class for entity field value.
+ */
+
+/**
  * Expose entity field as a context condition.
  */
 class context_condition_entity_field extends context_condition {
@@ -90,7 +95,7 @@ class context_condition_entity_field extends context_condition {
           if (!is_array($items) && $settings['field_empty']) {
             $this->condition_met($context);
           }
-          else if (isset($items[0]) && $settings['field_value'] == $items[0]['value']) {
+          elseif (isset($items[0]) && $settings['field_value'] == $items[0]['value']) {
             $this->condition_met($context);
           }
         }
