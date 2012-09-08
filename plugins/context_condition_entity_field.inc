@@ -95,8 +95,13 @@ class context_condition_entity_field extends context_condition {
           if (!is_array($items) && $settings['field_empty']) {
             $this->condition_met($context);
           }
-          elseif (isset($items[0]) && $settings['field_value'] == $items[0]['value']) {
-            $this->condition_met($context);
+          elseif (!empty($items) {
+            // Enable control on all field values.
+            foreach ($items as $item) {
+              if ($settings['field_value'] == $item['value']) {
+                $this->condition_met($context);
+              }
+            }
           }
         }
       }
