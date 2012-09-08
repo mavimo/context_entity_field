@@ -12,14 +12,14 @@ class context_condition_entity_field extends context_condition {
   /**
    * Omit condition values. We will provide a custom input form for our conditions.
    */
-  function condition_values() {
+  public function condition_values() {
     return array();
   }
 
   /**
    * Condition form.
    */
-  function condition_form($context) {
+  public function condition_form($context) {
     $form = array();
     $defaults = $this->fetch_from_context($context, 'values');
 
@@ -72,7 +72,7 @@ class context_condition_entity_field extends context_condition {
   /**
    * Condition form submit handler.
    */
-  function condition_form_submit($values) {
+  public function condition_form_submit($values) {
     $values['field_empty'] = isset($values['field_empty']) ? $values['field_empty'] : FALSE;
     return array(
       'entity_type' => serialize($values['entity_type']),
@@ -85,26 +85,89 @@ class context_condition_entity_field extends context_condition {
   /**
    * Execute.
    */
-  function execute($entity_type, $entity) {
+  public function execute($entity_type, $entity) {
     if ($this->condition_used()) {
       foreach ($this->get_contexts() as $context) {
         $settings = $this->fetch_from_context($context, 'values');
 
         if (in_array($entity_type, array_filter(unserialize($settings['entity_type'])))) {
           $items = field_get_items($entity_type, $entity, $settings['field_name']);
+
           if (!is_array($items) && $settings['field_empty']) {
             $this->condition_met($context);
           }
-          elseif (!empty($items) {
+          elseif (!empty($items)) {
             // Enable control on all field values.
-            foreach ($items as $item) {
-              if ($settings['field_value'] == $item['value']) {
-                $this->condition_met($context);
-              }
+            $values = $this->get_field_multiple_value($settings['field_name'], $items);
+
+            // Control value in available values.
+            if (in_array($settings['field_value'], $values)) {
+              $this->condition_met($context);
             }
           }
         }
       }
     }
+  }
+
+  /**
+   * Get values for specified field.
+   *
+   * @param string $field_name
+   *   Name of field to check.
+   *
+   * @param array $items
+   *   List of field items.
+   *
+   * @return array
+   *   List of all field items value.
+   */
+  protected function get_field_multiple_value($field_name, $items) {
+    $values = array();
+
+    // Loop on all field items.
+    foreach ($items as $item) {
+      // Get value for the current field type.
+      $value = $this->get_field_value($field_name, $item);
+
+      // Add to list of values.
+      $values[] = $value;
+    }
+
+    return $values;
+  }
+
+  /**
+   * Get value for specified field.
+   *
+   * @param string $field_name
+   *   Name of field to check.
+   *
+   * @param array $item
+   *   Field items.
+   *
+   * @return mixed
+   *   Vield values.
+   */
+  protected function get_field_value($field_name, $item) {
+    // Load field information; field_info_field already use static value, so
+    // is not required other caching layer on this code.
+    $field_info = field_info_field($field_name);
+
+    // List off value keys managed.
+    $field_value = array(
+      'taxonomy_term_reference' => 'tid',
+      'node_reference' => 'nid',
+      'user_reference' => 'uid',
+    );
+
+    // Extract values_keys for current field.
+    $type = $field_info['type'];
+    $value_key = isset($field_value[$type]) ? $field_value[$type] : 'value';
+
+    // Value (if exist).
+    $value = isset($item[$value_key]) ? $item[$value_key] : NULL;
+
+    return $value;
   }
 }
