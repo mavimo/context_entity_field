@@ -93,7 +93,7 @@ class context_condition_entity_field extends context_condition {
         if (in_array($entity_type, array_filter(unserialize($settings['entity_type'])))) {
           $items = field_get_items($entity_type, $entity, $settings['field_name']);
 
-          if (!is_array($items) && $settings['field_empty']) {
+          if (!is_array($items) && array_key_exists('field_empty', $settings) && $settings['field_empty']) {
             $this->condition_met($context);
           }
           elseif (!empty($items)) {
