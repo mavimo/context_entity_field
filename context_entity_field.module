@@ -54,12 +54,3 @@ function context_entity_field_entity_view($entity, $type, $view_mode, $langcode)
     $plugin->execute($type, $entity);
   }
 }
-
-/**
- * Implements of hook_taxonomy_term_view_alter().
- */
-function context_entity_field_taxonomy_term_view_alter(&$build) {
-  if ($plugin = context_get_plugin('condition', 'entity_field')) {
-    $plugin->execute($build['#entity_type'], $build['#term']);
-  }
-}
