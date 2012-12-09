@@ -28,6 +28,15 @@ function context_entity_field_context_plugins() {
     ),
   );
 
+  $plugins['context_condition_entity_view_mode'] = array(
+    'handler' => array(
+      'path'   => drupal_get_path('module', 'context_entity_field') . '/plugins',
+      'file'   => 'context_condition_entity_view_mode.inc',
+      'class'  => 'context_condition_entity_view_mode',
+      'parent' => 'context_condition',
+    ),
+  );
+
   return $plugins;
 }
 
@@ -41,6 +50,11 @@ function context_entity_field_context_registry() {
       'description' => t('Set context based on the entity field value'),
       'plugin'      => 'context_condition_entity_field',
     ),
+    'entity_view_mode' => array(
+      'title'       => t('Entity view mode'),
+      'description' => t('Set context based on the entity view mode'),
+      'plugin'      => 'context_condition_entity_view_mode',
+    ),
   );
 
   return $registry;
@@ -52,5 +66,9 @@ function context_entity_field_context_registry() {
 function context_entity_field_entity_view($entity, $type, $view_mode, $langcode) {
   if ($plugin = context_get_plugin('condition', 'entity_field')) {
     $plugin->execute($type, $entity);
+  }
+
+  if ($plugin = context_get_plugin('condition', 'entity_view_mode')) {
+    $plugin->execute($type, $view_mode);
   }
 }
