@@ -47,11 +47,16 @@ class context_condition_entity_field extends context_condition {
       '#default_value' => isset($defaults['field_name']) ? $defaults['field_name'] : TRUE,
     );
 
-    $form['field_empty'] = array(
-      '#title' => t('Empty field'),
-      '#type' => 'checkbox',
-      '#description' => t('Flag this to activate reaction on empty field.'),
-      '#default_value' => isset($defaults['field_empty']) ? $defaults['field_empty'] : TRUE,
+    $form['field_status'] = array(
+      '#title' => t('Field status'),
+      '#type' => 'select',
+      '#options' => array(
+        'all'   => t('All value'),
+        'empty' => t('Empty value'),
+        'match' => t('Match'),
+      ),
+      '#description' => t('Status of field to evaluate.'),
+      '#default_value' => isset($defaults['field_status']) ? $defaults['field_status'] : TRUE,
     );
 
     $form['field_value'] = array(
@@ -61,7 +66,7 @@ class context_condition_entity_field extends context_condition {
       '#default_value' => isset($defaults['field_value']) ? $defaults['field_value'] : TRUE,
       '#states' => array(
         'visible' => array(
-          ':input[name*="field_empty"]' => array('checked' => FALSE),
+          ':input[name*="field_status"]' => array('value' => 'match'),
         ),
       ),
     );
@@ -73,12 +78,14 @@ class context_condition_entity_field extends context_condition {
    * Condition form submit handler.
    */
   public function condition_form_submit($values) {
-    $values['field_empty'] = isset($values['field_empty']) ? $values['field_empty'] : FALSE;
+    $values['field_empty']  = isset($values['field_empty']) ? $values['field_empty'] : FALSE;
+    $values['field_status'] = !isset($values['field_status']) && !is_string($values['field_status']) ? 'empty' : $values['field_status'];
+
     return array(
-      'entity_type' => serialize($values['entity_type']),
-      'field_name'  => $values['field_name'],
-      'field_value' => $values['field_value'],
-      'field_empty' => $values['field_empty'],
+      'entity_type'  => serialize($values['entity_type']),
+      'field_name'   => $values['field_name'],
+      'field_status' => $values['field_status'],
+      'field_value'  => $values['field_value'],
     );
   }
 
@@ -93,10 +100,18 @@ class context_condition_entity_field extends context_condition {
         if (in_array($entity_type, array_filter(unserialize($settings['entity_type'])))) {
           $items = field_get_items($entity_type, $entity, $settings['field_name']);
 
-          if (!is_array($items) && array_key_exists('field_empty', $settings) && $settings['field_empty']) {
+          // Field value is empty.
+          if ($settings['field_status'] == 'empty' && $items === FALSE) {
             $this->condition_met($context);
           }
-          elseif (!empty($items)) {
+
+          // Field value is not empty.
+          if ($settings['field_status'] == 'all' && count($items) > 0) {
+            $this->condition_met($context);
+          }
+
+          // Field value match.
+          if ($settings['field_status'] == 'match') {
             // Enable control on all field values.
             $values = $this->get_field_multiple_value($settings['field_name'], $items);
 
