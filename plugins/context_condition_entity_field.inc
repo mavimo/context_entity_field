@@ -111,7 +111,7 @@ class context_condition_entity_field extends context_condition {
           }
 
           // Field value match.
-          if ($settings['field_status'] == 'match') {
+          if ($settings['field_status'] == 'match' && $items) {
             // Enable control on all field values.
             $values = $this->get_field_multiple_value($settings['field_name'], $items);
 
