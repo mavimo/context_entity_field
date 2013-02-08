@@ -106,7 +106,7 @@ class context_condition_entity_field extends context_condition {
           }
 
           // Field value is not empty.
-          if ($settings['field_status'] == 'all' && count($items) > 0) {
+          if ($settings['field_status'] == 'all' && $items !== FALSE) {
             $this->condition_met($context);
           }
 
