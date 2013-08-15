@@ -30,6 +30,7 @@ class context_condition_entity_field extends context_condition {
 
     $fields_name = array_keys(field_info_fields());
     $fields_name = array_combine($fields_name, $fields_name);
+    asort($fields_name);
 
     $form['entity_type'] = array(
       '#title' => t('Entity type'),
