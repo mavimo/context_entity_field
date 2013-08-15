@@ -4,3 +4,6 @@ package = Context
 core = 7.x
 
 dependencies[] = context
+
+files[] = plugins/context_condition_entity_field.inc
+files[] = plugins/context_condition_entity_view_mode.inc
