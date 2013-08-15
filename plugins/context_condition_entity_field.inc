@@ -82,7 +82,7 @@ class context_condition_entity_field extends context_condition {
     $values['field_status'] = !isset($values['field_status']) && !is_string($values['field_status']) ? 'empty' : $values['field_status'];
 
     return array(
-      'entity_type'  => serialize($values['entity_type']),
+      'entity_type'  => serialize(array_filter($values['entity_type'])),
       'field_name'   => $values['field_name'],
       'field_status' => $values['field_status'],
       'field_value'  => $values['field_value'],
