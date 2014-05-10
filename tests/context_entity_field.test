@@ -427,3 +427,151 @@ class ContextConditionContextEntityTaxonomyFieldTest extends ContextConditionCon
     $this->assertText("Active context: entity_term_field_match");
   }
 }
+
+/**
+ * Test context contition to entity without field.
+ */
+class ContextConditionContextEntityNoFieldTest extends ContextConditionContextEntityFieldTest {
+  /**
+   * Nodes generated to be used in tests.
+   */
+  protected $nodes = array();
+
+  /**
+   * Testsuite information.
+   *
+   * @return array
+   *   Array with infromation about test suite.
+   */
+  public static function getInfo() {
+    return array(
+      'name'        => 'Condition: field missing',
+      'description' => 'Test Entity Field condition for missing fields.',
+      'group'       => 'Context Entity Field',
+    );
+  }
+
+  /**
+   * Create required data to run tests.
+   */
+  public function setUp() {
+    parent::setUp();
+    $this->createNodes();
+    $this->createContexts();
+  }
+
+  /**
+   * Remove date created to run tests.
+   */
+  public function tearDown() {
+    parent::tearDown();
+
+    // Delete nodes.
+    node_delete($this->nodes['body_empty']->nid);
+    node_delete($this->nodes['body_test']->nid);
+    node_delete($this->nodes['body_other']->nid);
+
+    // Delete contexts.
+    $this->contextDelete('entity_text_field_empty');
+    $this->contextDelete('entity_text_field_all');
+    $this->contextDelete('entity_text_field_match');
+  }
+
+  /**
+   * Create context to test conditions.
+   */
+  protected function createContexts() {
+    $this->contextCreate('entity_missing_field_empty', array(
+      'entity_type'   => array('node'),
+      'field_name'    => 'missing',
+      'field_status'  => 'empty',
+      'field_value'   => '',
+    ));
+
+    $this->contextCreate('entity_missing_field_all', array(
+      'entity_type'   => array('node'),
+      'field_name'    => 'missing',
+      'field_status'  => 'all',
+      'field_value'   => 'other',
+    ));
+
+    $this->contextCreate('entity_missing_field_match', array(
+      'entity_type'   => array('node'),
+      'field_name'    => 'missing',
+      'field_status'  => 'match',
+      'field_value'   => 'test',
+    ));
+  }
+
+  /**
+   * Create nodes to test context condictions.
+   */
+  protected function createNodes() {
+    $settings = array(
+      'type' => 'article',
+      'title' => 'Article body: EMPTY',
+    );
+
+    $this->nodes['body_empty'] = $this->drupalCreateNode($settings);
+    $this->nodes['body_empty']->body[LANGUAGE_NONE] = array();
+    node_save($this->nodes['body_empty']);
+
+    $settings = array(
+      'type' => 'article',
+      'title' => 'Article body: EMPTY',
+      'body' => array(LANGUAGE_NONE => array(array('value' => 'test'))),
+    );
+
+    $this->nodes['body_test'] = $this->drupalCreateNode($settings);
+
+    $settings = array(
+      'type' => 'article',
+      'title' => 'Article body: other',
+      'body' => array(LANGUAGE_NONE => array(array('value' => 'other'))),
+    );
+
+    $this->nodes['body_other'] = $this->drupalCreateNode($settings);
+  }
+
+  /**
+   * Check context for 'empty' setting.
+   */
+  public function testTextSingleEmptyField() {
+    $this->drupalGet("node/" . $this->nodes['body_empty']->nid);
+    $this->assertNoText("Active context: entity_missing_field_empty");
+
+    $this->drupalGet("node/" . $this->nodes['body_test']->nid);
+    $this->assertNoText("Active context: entity_missing_field_empty");
+
+    $this->drupalGet("node/" . $this->nodes['body_other']->nid);
+    $this->assertNoText("Active context: entity_missing_field_empty");
+  }
+
+  /**
+   * Check condition for 'all' setting.
+   */
+  public function testTextSingleAllField() {
+    $this->drupalGet("node/" . $this->nodes['body_empty']->nid);
+    $this->assertNoText("Active context: entity_missing_field_all");
+
+    $this->drupalGet("node/" . $this->nodes['body_test']->nid);
+    $this->assertNoText("Active context: entity_missing_field_all");
+
+    $this->drupalGet("node/" . $this->nodes['body_other']->nid);
+    $this->assertNoText("Active context: entity_missing_field_all");
+  }
+
+  /**
+   * Check condition for 'match' setting.
+   */
+  public function testTextSingleMatchField() {
+    $this->drupalGet("node/" . $this->nodes['body_empty']->nid);
+    $this->assertNoText("Active context: entity_missing_field_match");
+
+    $this->drupalGet("node/" . $this->nodes['body_test']->nid);
+    $this->assertNoText("Active context: entity_missing_field_match");
+
+    $this->drupalGet("node/" . $this->nodes['body_other']->nid);
+    $this->assertNoText("Active context: entity_missing_field_match");
+  }
+}

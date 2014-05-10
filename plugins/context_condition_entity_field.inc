@@ -101,6 +101,11 @@ class context_condition_entity_field extends context_condition {
         if (in_array($entity_type, array_filter(unserialize($settings['entity_type'])))) {
           $items = field_get_items($entity_type, $entity, $settings['field_name']);
 
+          // Field do not exist.
+          if ($items === FALSE && !isset($entity->{$settings['field_name']})) {
+            continue;
+          }
+
           // Field value is empty.
           if ($settings['field_status'] == 'empty' && $items === FALSE) {
             $this->condition_met($context);
