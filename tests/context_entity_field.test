@@ -14,7 +14,7 @@ abstract class ContextConditionContextEntityFieldTest extends DrupalWebTestCase 
   /**
    * {@inerithDocs}
    */
-  function setUp() {
+  public function setUp() {
     parent::setUp('context', 'ctools', 'context_entity_field');
   }
 
@@ -30,7 +30,7 @@ abstract class ContextConditionContextEntityFieldTest extends DrupalWebTestCase 
   protected function contextCreate($name, $options) {
     $entities = array();
 
-    foreach ($options['entity_type'] as $entity_type ) {
+    foreach ($options['entity_type'] as $entity_type) {
       $entities[$entity_type] = $entity_type;
     }
     $options['entity_type'] = serialize($entities);
@@ -310,9 +310,13 @@ class ContextConditionContextEntityTaxonomyFieldTest extends ContextConditionCon
     $settings = array(
       'type' => 'article',
       'title' => 'Article term: oranges',
-      'field_tags' => array(LANGUAGE_NONE => array(
-        array('tid' => $this->terms['oranges']->tid),
-      )),
+      'field_tags' => array(
+        LANGUAGE_NONE => array(
+          array(
+            'tid' => $this->terms['oranges']->tid,
+          ),
+        ),
+      ),
     );
 
     $this->nodes['terms_oranges'] = $this->drupalCreateNode($settings);
@@ -320,9 +324,13 @@ class ContextConditionContextEntityTaxonomyFieldTest extends ContextConditionCon
     $settings = array(
       'type' => 'article',
       'title' => 'Article term: apples',
-      'field_tags' => array(LANGUAGE_NONE => array(
-        array('tid' => $this->terms['apples']->tid),
-      )),
+      'field_tags' => array(
+        LANGUAGE_NONE => array(
+          array(
+            'tid' => $this->terms['apples']->tid
+          ),
+        ),
+      ),
     );
 
     $this->nodes['terms_apples'] = $this->drupalCreateNode($settings);
@@ -330,10 +338,12 @@ class ContextConditionContextEntityTaxonomyFieldTest extends ContextConditionCon
     $settings = array(
       'type' => 'article',
       'title' => 'Article terms: oranges & apples',
-      'field_tags' => array(LANGUAGE_NONE => array(
-        array('tid' => $this->terms['apples']->tid),
-        array('tid' => $this->terms['oranges']->tid),
-      )),
+      'field_tags' => array(
+        LANGUAGE_NONE => array(
+          array('tid' => $this->terms['apples']->tid),
+          array('tid' => $this->terms['oranges']->tid),
+        ),
+      ),
     );
 
     $this->nodes['terms_all'] = $this->drupalCreateNode($settings);
