@@ -21,7 +21,7 @@ before_install:
   - pear channel-discover pear.drush.org
 
 install:
-  - pear install drush/drush
+  - pear install drush/drush-beta
   - phpenv rehash
 
 before_script:
@@ -35,4 +35,4 @@ before_script:
   - drush --yes en simpletest
 
 script:
-  - echo $(drush test-run 'Context Entity Field') | grep -v '\[error\]'
+  - drush test-run 'Context Entity Field'
