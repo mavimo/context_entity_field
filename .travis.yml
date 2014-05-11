@@ -35,4 +35,4 @@ before_script:
   - drush --yes en simpletest
 
 script:
-  - drush test-run 'Context Entity Field' --debug
+  - echo $(drush test-run 'Context Entity Field') | grep -v '\[error\]'
